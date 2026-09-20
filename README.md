@@ -12,6 +12,12 @@ This checkout uses standard Next.js and Neon Postgres. It does not depend on Cha
 4. With `DATABASE_URL` in the environment, run `pnpm db:migrate` once. The migration is idempotent and does not delete data.
 5. Deploy, open `/login`, and enter the access key. All data endpoints require a signed, expiring session cookie. Missing access configuration fails closed.
 
+## Public demo
+
+Visitors to `/` without an owner session get a public demo. `/demo` always opens the demo, even for a signed-in owner. Materials, drafts, reviews, and profile settings use the browser-local `signal.public-demo.v1` storage key. Nothing is sent to the private data APIs or Neon. Different browser profiles have independent demo data; clearing browser storage removes it. Export JSON to keep a copy.
+
+The demo supports example materials, text/JSON collection, deduplication, free rule-based review, drafts, and archive/done actions. Automatic X link resolution and paid JEV review remain private-only. `/login` retains owner access; authenticated `/` and all existing data APIs keep the existing access-key protections. No database migration is required for the demo.
+
 ## Local development
 
 Use Node 22+ and the pnpm version in package.json. Run `pnpm install --frozen-lockfile`, copy `.env.example` to `.env.local`, fill its values, initialize the schema, then run `pnpm dev`.
@@ -28,3 +34,4 @@ The original Sites database is not copied by deploying this repository. Export m
 - JEV keys are entered per browser session and are not stored in the database.
 - This is a single-owner workspace, not a multi-user service.
 - Database connection and live Vercel deployment must be verified after provisioning.
+

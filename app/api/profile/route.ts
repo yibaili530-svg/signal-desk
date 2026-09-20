@@ -1,0 +1,6 @@
+import {authorized,denied} from '@/lib/access';
+import {englishLabel} from "@/lib/english";
+import {store,sameOrigin} from '@/lib/store';
+import {defaultProfile} from '@/lib/signal';
+export async function GET(){if(!await authorized())return denied();try{const r=await store().prepare('SELECT value FROM settings WHERE key=?').bind('profile').first<{value:string}>();return Response.json({profile:r?{...defaultProfile,...Object.fromEntries(Object.entries(JSON.parse(r.value)).map(([k,v])=>[k,typeof v==="string"?englishLabel(v):v]))}:defaultProfile},{headers:{'Cache-Control':'no-store'}});}catch{return Response.json({error:'Could not load profile settings'},{status:503});}}
+export async function PUT(req:Request){if(!await authorized())return denied();try{sameOrigin(req);const b:any=await req.json();const p={...defaultProfile};for(const k of ['handle','focus','projects','audience','style','topics'] as const){if(typeof b[k]==='string')p[k]=b[k].slice(0,4000);}p.minutes=Math.max(5,Math.min(180,Number(b.minutes)||20));await store().prepare('INSERT INTO settings(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value').bind('profile',JSON.stringify(p)).run();return Response.json({profile:p});}catch{return Response.json({error:'Settings were not saved. Please retry.'},{status:400});}}

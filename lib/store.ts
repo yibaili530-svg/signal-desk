@@ -27,3 +27,18 @@ export function sameOrigin(request:Request) {
   const origin=request.headers.get('origin');
   if(origin && origin !== new URL(request.url).origin) throw new Error('Invalid request origin');
 }
+
+// Serialize admission and insert in one transaction so parallel imports cannot
+// exceed the post capacity. A rejected batch inserts nothing; duplicates remain valid.
+export async function insertCollectedEntries(rows:{id:string;fingerprint:string;payload:string;created_at:string}[]) {
+  const db=database();
+  const incoming=`WITH incoming AS (SELECT DISTINCT ON (fingerprint) * FROM jsonb_to_recordset($1::jsonb) AS x(id text,fingerprint text,payload text,created_at text)), fresh AS (SELECT i.* FROM incoming i WHERE NOT EXISTS (SELECT 1 FROM entries e WHERE e.fingerprint=i.fingerprint))`;
+  const admission=`(NOT EXISTS (SELECT 1 FROM fresh WHERE payload::jsonb->>'kind'='post') OR (SELECT count(*) FROM entries WHERE payload::jsonb->>'kind'='post')+(SELECT count(*) FROM fresh WHERE payload::jsonb->>'kind'='post')<=100)`;
+  const values=[JSON.stringify(rows)];
+  const results=await db.transaction([
+    db.query('LOCK TABLE entries IN SHARE ROW EXCLUSIVE MODE'),
+    db.query(`${incoming} SELECT ${admission} AS allowed`,values),
+    db.query(`${incoming} INSERT INTO entries(id,fingerprint,payload,created_at) SELECT id,fingerprint,payload,created_at FROM fresh WHERE ${admission} ON CONFLICT(fingerprint) DO NOTHING`,values),
+  ]);
+  return {allowed:results[1].rows[0]?.allowed===true,added:results[2].rowCount??0};
+}

@@ -36,6 +36,7 @@ export async function demoApi(path:string,method='GET',body?:unknown):Promise<an
     const incoming:Entry[]=b.entries.map(normalize);
     const seen=new Set(state.entries.map(fingerprint));
     const added=incoming.filter(e=>{const fp=fingerprint(e);if(seen.has(fp))return false;seen.add(fp);return true;});
+    if(added.some(e=>e.kind==='post') && state.entries.filter(e=>e.kind==='post').length+added.filter(e=>e.kind==='post').length>100)throw new Error('Collector holds up to 100 posts. Export and delete posts to make room. Nothing was imported.');
     if(state.entries.length+added.length>2000)throw new Error('This demo holds up to 2,000 materials. Export and remove older materials first.');
     state.entries=[...added,...state.entries];write(state);
     return {added:added.length,total:incoming.length};
@@ -68,3 +69,4 @@ export async function demoApi(path:string,method='GET',body?:unknown):Promise<an
   if(path==='resolve')throw new Error('In the public demo, paste the post text with its link, or upload JSON. Automatic X link reading is available in the private workspace.');
   throw new Error('This operation is not available in the public demo.');
 }
+

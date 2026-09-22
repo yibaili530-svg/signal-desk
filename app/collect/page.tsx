@@ -1,2 +1,2 @@
-import {redirect} from "next/navigation";
-export default function Page(){redirect("/");}
+import Workspace from "../workspace";
+export default function Page(){return <Workspace mode="collect" demo/>;}

@@ -197,3 +197,8 @@ input,textarea{border-color:#bfc6b1;border-radius:3px;background:#fff}input:focu
 
 .entry-card .entry-overall-previous{background:#eef3e4}
 .entry-card .entry-overall-empty{background:#f2f4ee;color:#79816f}
+
+.review-previous{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;color:#64705c;font-size:12px}
+.review-previous p{margin:0}
+.review-previous .btn{font-size:12px;white-space:nowrap}
+@media(max-width:760px){.review-previous{align-items:flex-start;flex-direction:column}}

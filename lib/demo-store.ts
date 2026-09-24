@@ -100,8 +100,8 @@ function restoreEntry(raw:any):Entry{
   if(typeof raw.createdAt==='string'&&Number.isFinite(Date.parse(raw.createdAt)))e.createdAt=new Date(raw.createdAt).toISOString();
   const a=raw.analysis;
   if(a){
-    if(!['JEV','Rule-based'].includes(a.engine)||!['score','relevance','audience','unique'].every(k=>Number.isFinite(a[k])&&a[k]>=0&&a[k]<=100)||typeof a.action!=='string'||typeof a.topic!=='string')throw new Error('Invalid review scores in backup. Nothing was imported.');
-    e.analysis={engine:a.engine,score:a.score,relevance:a.relevance,audience:a.audience,unique:a.unique,action:a.action.slice(0,100),topic:a.topic.slice(0,100)};
+    if(!['JEV','Rule-based'].includes(a.engine)||!(['score','relevance',...(a.metricVersion===2?['discussion','contribution']:['audience','unique'])].every(k=>Number.isFinite(a[k])&&a[k]>=0&&a[k]<=100))||typeof a.action!=='string'||typeof a.topic!=='string')throw new Error('Invalid review scores in backup. Nothing was imported.');
+    e.analysis=a.metricVersion===2?{engine:a.engine,metricVersion:2,score:a.score,relevance:a.relevance,discussion:a.discussion,contribution:a.contribution,action:a.action.slice(0,100),topic:a.topic.slice(0,100)}:{engine:a.engine,score:a.score,relevance:a.relevance,audience:a.audience,unique:a.unique,action:a.action.slice(0,100),topic:a.topic.slice(0,100)};
   }
   return e;
 }

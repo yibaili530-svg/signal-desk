@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "Signal Collector",
+  "version": "1.1.1",
+  "description": "Save X posts to your local Signal Collector and review with JEV.",
+  "minimum_chrome_version": "114",
+  "permissions": [
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://signal-desk-red-rho.vercel.app/*"
+  ],
+  "background": {
+    "service_worker": "worker.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Signal Collector"
+  },
+  "options_page": "popup.html",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://x.com/*",
+        "https://twitter.com/*"
+      ],
+      "js": [
+        "extract.js",
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ]
+    }
+  ]
+}

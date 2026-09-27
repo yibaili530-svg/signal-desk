@@ -5,8 +5,8 @@ No Signal account or login required. Desktop Chrome and Edge.
 
 ## Install in Chrome
 
-1. On [GitHub](https://github.com/yibaili530-svg/signal-desk/tree/main/extension), click **Code → Download ZIP** and extract the repository to a folder you will keep.
-2. Open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked**, and select the `extension` folder inside the downloaded repository. In Edge, use `edge://extensions` instead.
+1. [Download Signal Collector ZIP](https://github.com/yibaili530-svg/signal-desk/raw/refs/heads/main/extension/Signal-Collector-v1.1.1.zip) and extract it to a folder you will keep.
+2. Open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked**, and select the `Signal-Collector/extension` folder inside the extracted ZIP. In Edge, use `edge://extensions` instead.
 3. Open [Signal Desk](https://signal-desk-red-rho.vercel.app/) in the **same browser profile**. In **Settings**, enter your X handle, account direction, topics and current projects, then save. The extension needs your account direction or projects to review a post.
 4. Enter **your own JEV API Key** in Signal Desk Settings or in the extension popup and save it. New analyses use your API credits.
 5. Open the extension popup and click **Check connection**. A success message confirms that the extension can reach Signal Desk and find your account direction. The API Key itself is verified when JEV analyzes the first post; a successful connection check does not verify the Key.
